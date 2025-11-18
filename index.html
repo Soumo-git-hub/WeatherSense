@@ -106,6 +106,18 @@
                     <h3 id="uvIndex">--</h3>
                     <div id="uvIndicator" class="quality-indicator"></div>
                 </div>
+                <div class="metric-card glass-effect">
+                    <i class="fas fa-thermometer-half metric-icon"></i>
+                    <p>Pressure</p>
+                    <h3 id="pressure">-- hPa</h3>
+                    <p id="pressureTrend" class="metric-detail">-- trend</p>
+                </div>
+                <div class="metric-card glass-effect">
+                    <i class="fas fa-smile metric-icon"></i>
+                    <p>Comfort Level</p>
+                    <h3 id="comfortLevel">--</h3>
+                    <div id="comfortIndicator" class="quality-indicator"></div>
+                </div>
             </div>
             
             <!-- Sunrise/Sunset Card -->
@@ -134,52 +146,17 @@
         <section class="tabs-container">
             <nav class="tabs-nav">
                 <button class="tab-btn active" data-tab="recommendations">Recommendations</button>
-                <button class="tab-btn" data-tab="forecast">Forecast</button>
-                <button class="tab-btn" data-tab="historical">Historical</button>
-                <button class="tab-btn" data-tab="map">Weather Map</button>
             </nav>
             
             <div class="tab-content">
-                <!-- Forecast Tab -->
-                <div id="forecast" class="tab-pane coming-soon-tab">
-                    <div class="coming-soon-message glass-effect">
-                        <h3>Coming Soon</h3>
-                        <p>This feature is currently under development and will be available in a future update.</p>
-                        <div class="coming-soon-icon">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Forecast Toggle -->
-                    <div class="forecast-toggle">
-                        <button class="forecast-btn active" data-forecast="hourly">Hourly</button>
-                        <button class="forecast-btn" data-forecast="daily">7-Day</button>
-                    </div>
-                    <!-- Forecast Chart -->
-                    <div class="forecast-graph glass-effect">
-                      <canvas id="forecastChart"></canvas>
-                    </div>
-                    
-                    <!-- Hourly Forecast Slider -->
-                    <div class="hourly-forecast" id="hourlyForecast">
-                        <!-- Hourly items will be added dynamically -->
-                    </div>
-                    
-                    <!-- Daily Forecast Cards -->
-                    <div class="daily-forecast" id="dailyForecast">
-                        <!-- Daily items will be added dynamically -->
-                    </div>
-                </div>
-                
                 <!-- Recommendations Tab -->
                 <div id="recommendations" class="tab-pane active">
                     <div class="recommendations glass-effect">
                         <h3>Today's Recommendations</h3>
-                        <!-- Rest of recommendations content -->
                         <div class="recommendation-cards">
                             <div class="recommendation-card glass-effect">
-                                <h4><i class="fas fa-tshirt"></i> Clothing</h4>
-                                <p id="clothingRecommendation">Loading...</p>
+                                <h4><i class="fas fa-heartbeat"></i> Health & Wellness</h4>
+                                <p id="healthWellnessRecommendation">Loading...</p>
                             </div>
                             <div class="recommendation-card glass-effect">
                                 <h4><i class="fas fa-running"></i> Activities</h4>
@@ -200,87 +177,23 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="recommendation-card glass-effect">
+                                <h4><i class="fas fa-tint"></i> Hydration</h4>
+                                <p id="waterRecommendation">Loading...</p>
+                            </div>
+                            
+                            <!-- Meteorological Data Section -->
+                            <div class="recommendation-card glass-effect meteorological">
+                                <h4><i class="fas fa-cloud-sun"></i> Meteorological Insights</h4>
+                                <div id="meteorologicalData">
+                                    <p>Loading meteorological data...</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Historical Tab -->
-                <div id="historical" class="tab-pane coming-soon-tab">
-                    <div class="coming-soon-message glass-effect">
-                        <h3>Coming Soon</h3>
-                        <p>This feature is currently under development and will be available in a future update.</p>
-                        <div class="coming-soon-icon">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="historical-data glass-effect">
-                        <h3>Historical Comparison</h3>
-                        
-                        <!-- Rest of historical content -->
-                        <div class="historical-controls">
-                            <select id="historicalMetric" class="historical-select">
-                                <option value="temperature">Temperature</option>
-                                <option value="precipitation">Precipitation</option>
-                                <option value="humidity">Humidity</option>
-                            </select>
-                            <select id="historicalPeriod" class="historical-select">
-                                <option value="week">Past Week</option>
-                                <option value="month" selected>Past Month</option>
-                                <option value="year">Past Year</option>
-                            </select>
-                        </div>
-                        
-                        <div class="chart-container">
-                            <canvas id="historicalChart"></canvas>
-                        </div>
-                        
-                        <div class="historical-highlights">
-                            <div class="highlight-card">
-                                <h4>VS Last Year</h4>
-                                <p id="yearComparison">--</p>
-                            </div>
-                            <div class="highlight-card">
-                                <h4>VS Average</h4>
-                                <p id="avgComparison">--</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Map Tab -->
-                <div id="map" class="tab-pane coming-soon-tab">
-                    <div class="coming-soon-message glass-effect">
-                        <h3>Coming Soon</h3>
-                        <p>This feature is currently under development and will be available in a future update.</p>
-                        <div class="coming-soon-icon">
-                            <i class="fas fa-tools"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="weather-map glass-effect">
-                        <h3>Interactive Weather Map</h3>
-                        
-                        <!-- Rest of map content -->
-                        <div class="map-controls">
-                            <select id="mapLayer" class="map-select">
-                                <option value="temperature">Temperature</option>
-                                <option value="precipitation">Precipitation</option>
-                                <option value="clouds">Cloud Cover</option>
-                                <option value="wind">Wind Speed</option>
-                            </select>
-                        </div>
-                        
-                        <div id="weatherMap" class="map-container">
-                            <!-- Map will be loaded here -->
-                        </div>
-                        
-                        <div class="map-legend">
-                            <!-- Dynamic legend will be added here -->
-                        </div>
-                    </div>
-                </div>
+                <!-- Removed Forecast, Historical, and Weather Map tabs as requested -->
             </div>
         </section>
         
@@ -289,9 +202,14 @@
             <!-- Dynamic alerts will be added here -->
         </section>
         
-        <!-- App Footer - Remove refresh button -->
+        <!-- App Footer -->
         <footer class="app-footer">
-            <!-- Empty footer -->
+            <div class="footer-content">
+                <p>&copy; 2025 WeatherSense. All rights reserved.</p>
+                <nav class="footer-links">
+                    <a href="privacy.html" target="_blank">Privacy Policy</a>
+                </nav>
+            </div>
         </footer>
     </main>
 
@@ -299,9 +217,13 @@
     <canvas id="weatherCanvas" class="weather-canvas"></canvas>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="weather.js"></script>
     <script src="animations.js"></script>
     <script src="charts.js"></script>
+    <script src="forecasting.js" type="module"></script>
+    <script src="visualizations.js" type="module"></script>
+    <script src="meteorology.js" type="module"></script>
     <script src="recommendations.js" type="module"></script>
     <script>
         // Tab navigation functionality

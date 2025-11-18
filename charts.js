@@ -5,13 +5,21 @@ const CHART_CONFIG = {
       text: '#2c3e50',
       grid: 'rgba(0, 0, 0, 0.1)',
       primary: 'rgb(75, 192, 192)',
-      secondary: 'rgba(75, 192, 192, 0.2)'
+      secondary: 'rgba(75, 192, 192, 0.2)',
+      temperature: 'rgb(255, 99, 132)',
+      humidity: 'rgb(54, 162, 235)',
+      pressure: 'rgb(153, 102, 255)',
+      wind: 'rgb(255, 159, 64)'
     },
     dark: {
       text: '#ffffff',
       grid: 'rgba(255, 255, 255, 0.1)',
       primary: 'rgb(0, 255, 255)',
-      secondary: 'rgba(0, 255, 255, 0.2)'
+      secondary: 'rgba(0, 255, 255, 0.2)',
+      temperature: 'rgb(255, 99, 132)',
+      humidity: 'rgb(54, 162, 235)',
+      pressure: 'rgb(153, 102, 255)',
+      wind: 'rgb(255, 159, 64)'
     }
   },
   animation: {
@@ -50,30 +58,52 @@ function updateForecastChart(forecast) {
   const context = ctx.getContext('2d');
   
   // Process forecast data
-  const data = processForecastData(forecast);
+  const data = processMultiParameterForecastData(forecast);
   const isDark = document.body.classList.contains('dark-theme');
   const colors = CHART_CONFIG.colors[isDark ? 'dark' : 'light'];
   
   // Destroy previous chart instance
   if (forecastChart) forecastChart.destroy();
   
-  // Create new chart
+  // Create new multi-parameter chart
   forecastChart = new Chart(context, {
     type: 'line',
     data: {
       labels: data.labels,
-      datasets: [{
-        label: 'Temperature',
-        data: data.temperatures,
-        borderColor: colors.primary,
-        backgroundColor: createGradient(context, colors.primary),
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        pointBackgroundColor: colors.primary,
-      }]
+      datasets: [
+        {
+          label: 'Temperature',
+          data: data.temperatures,
+          borderColor: colors.temperature,
+          backgroundColor: createGradient(context, colors.temperature),
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Humidity',
+          data: data.humidities,
+          borderColor: colors.humidity,
+          borderWidth: 2,
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          yAxisID: 'y1'
+        },
+        {
+          label: 'Pressure',
+          data: data.pressures,
+          borderColor: colors.pressure,
+          borderWidth: 2,
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          yAxisID: 'y2'
+        }
+      ]
     },
     options: {
       responsive: true,
@@ -84,20 +114,82 @@ function updateForecastChart(forecast) {
         intersect: false
       },
       plugins: {
-        legend: { display: false },
+        legend: { 
+          display: true,
+          position: 'top',
+          labels: {
+            color: colors.text,
+            font: {
+              size: 12
+            }
+          }
+        },
         tooltip: {
           callbacks: {
             title: (items) => items[0].label.replace(',', ' '),
-            label: (context) => ` ${context.dataset.label}: ${context.parsed.y}°${window.state?.units === 'imperial' ? 'F' : 'C'}`
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.datasetIndex === 0) {
+                // Temperature
+                label += context.parsed.y + '°' + (window.state?.units === 'imperial' ? 'F' : 'C');
+              } else if (context.datasetIndex === 1) {
+                // Humidity
+                label += context.parsed.y + '%';
+              } else {
+                // Pressure
+                label += context.parsed.y + ' hPa';
+              }
+              return label;
+            }
           }
         }
       },
       scales: {
         y: {
-          beginAtZero: false,
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: `Temperature (°${window.state?.units === 'imperial' ? 'F' : 'C'})`,
+            color: colors.text
+          },
           grid: { color: colors.grid },
           ticks: { 
             callback: (value) => `${value}°${window.state?.units === 'imperial' ? 'F' : 'C'}`,
+            color: colors.text
+          }
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Humidity (%)',
+            color: colors.text
+          },
+          grid: { drawOnChartArea: false },
+          ticks: { 
+            callback: (value) => `${value}%`,
+            color: colors.text
+          }
+        },
+        y2: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Pressure (hPa)',
+            color: colors.text
+          },
+          grid: { drawOnChartArea: false },
+          ticks: { 
+            callback: (value) => `${value} hPa`,
             color: colors.text
           }
         },
@@ -187,6 +279,19 @@ function processForecastData(forecast) {
     acc.temperatures.push(Math.round(item.main.temp));
     return acc;
   }, { labels: [], temperatures: [] });
+}
+
+function processMultiParameterForecastData(forecast) {
+  if (!forecast?.list) return { labels: [], temperatures: [], humidities: [], pressures: [] };
+  
+  return forecast.list.slice(0, 12).reduce((acc, item) => {
+    const date = new Date(item.dt * 1000);
+    acc.labels.push(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    acc.temperatures.push(Math.round(item.main.temp));
+    acc.humidities.push(Math.round(item.main.humidity));
+    acc.pressures.push(Math.round(item.main.pressure));
+    return acc;
+  }, { labels: [], temperatures: [], humidities: [], pressures: [] });
 }
 
 function processHistoricalData(data) {
